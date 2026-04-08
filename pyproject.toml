@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vibe-sync"
+version = "0.2.0"
+description = "Sync configuration snapshots (vibes) to versioned Google Cloud Storage"
+requires-python = ">=3.10"
+dependencies = [
+    "click>=8.1",
+    "google-cloud-storage>=2.10",
+    "google-auth>=2.22",
+    "rich>=13.0",
+    "mcp>=1.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7", "pytest-mock>=3.11", "ruff>=0.1"]
+
+[project.scripts]
+vibe-sync = "vibe_sync.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["vibe_sync*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
