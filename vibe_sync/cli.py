@@ -3,22 +3,25 @@
 from __future__ import annotations
 
 import sys
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 import click
 from rich.console import Console
 from rich.table import Table
 
+if TYPE_CHECKING:
+    from vibe_sync.gcs import VibeGCS
+
 console = Console()
 
 
-def _load_config():
+def _load_config() -> dict:
     from vibe_sync.auth import load_config
 
     return load_config()
 
 
-def _make_gcs(config: dict):
+def _make_gcs(config: dict) -> "VibeGCS":
     from vibe_sync.auth import VibeAuth
     from vibe_sync.gcs import VibeGCS
 

@@ -4,14 +4,17 @@ from __future__ import annotations
 
 import difflib
 from pathlib import Path
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
+
+if TYPE_CHECKING:
+    from vibe_sync.gcs import VibeGCS
 
 from rich.console import Console
 
 console = Console()
 
 
-def push(name: str, path: str | Path, gcs) -> int:
+def push(name: str, path: str | Path, gcs: "VibeGCS") -> int:
     """Validate *path* exists and upload it as vibe *name*.
 
     Returns the new version number.
@@ -24,7 +27,7 @@ def push(name: str, path: str | Path, gcs) -> int:
     return version
 
 
-def pull(name: str, path: str | Path, gcs, version: Optional[int] = None) -> None:
+def pull(name: str, path: str | Path, gcs: "VibeGCS", version: Optional[int] = None) -> None:
     """Download vibe *name* to *path*."""
     local_path = Path(path)
     data = gcs.download(name, version)
@@ -34,13 +37,13 @@ def pull(name: str, path: str | Path, gcs, version: Optional[int] = None) -> Non
     console.print(f"[green]✔[/green] Pulled [bold]{name}[/bold] ({ver_label}) → {local_path}")
 
 
-def undo_vibe(name: str, gcs) -> None:
+def undo_vibe(name: str, gcs: "VibeGCS") -> None:
     """Revert vibe *name* to its previous version."""
     prev_version = gcs.undo(name)
     console.print(f"[yellow]↩[/yellow] Reverted [bold]{name}[/bold] to version {prev_version}")
 
 
-def diff_vibe(name: str, path: Optional[str | Path], gcs) -> None:
+def diff_vibe(name: str, path: Optional[str | Path], gcs: "VibeGCS") -> None:
     """Show diff between local *path* and the latest GCS version of *name*.
 
     If *path* is None, show diff between the two most recent GCS versions.

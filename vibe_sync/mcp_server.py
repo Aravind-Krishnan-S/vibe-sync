@@ -34,6 +34,15 @@ def build_mcp_app():
 
         If *name* is omitted, lists all vibes. Otherwise returns the content
         (or metadata) for the named vibe at the given *version* (latest if None).
+
+        Returns a JSON-encoded string with the following structure:
+
+        - List mode (name=None):
+          ``{"vibes": [{"name": str, "current_version": int, "versions": [...]}]}``
+        - Single vibe (name given):
+          ``{"name": str, "version": int, "is_text": bool, "content": str, "manifest": {...}}``
+        - Error:
+          ``{"error": str}`` or ``{"error": str, "vibes": []}``
         """
         gcs = _get_gcs()
         if gcs is None:
