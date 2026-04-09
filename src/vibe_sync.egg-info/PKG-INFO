@@ -1,0 +1,16 @@
+Metadata-Version: 2.4
+Name: vibe-sync
+Version: 0.1.0
+Summary: AI context preservation CLI tool for tracking project progress.
+Requires-Python: >=3.9
+Requires-Dist: typer
+Requires-Dist: rich
+Requires-Dist: google-generativeai
+Requires-Dist: GitPython
+Requires-Dist: python-dotenv
+Requires-Dist: pydantic
+Requires-Dist: fastmcp
+Requires-Dist: google-cloud-storage
+Requires-Dist: uvicorn
+Requires-Dist: tiktoken
+Requires-Dist: groq

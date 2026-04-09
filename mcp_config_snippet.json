@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "vibe-sync": {
+      "command": "python",
+      "args": ["c:\\AI_Projects\\Vibe_sync\\server.py"],
+      "env": {},
+      "timeout": 30
+    }
+  }
+}

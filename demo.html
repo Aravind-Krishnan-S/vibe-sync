@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe-Sync Demo</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;600;700&display=swap');
+
+        body {
+            margin: 0;
+            padding: 2rem;
+            background: #0f172a;
+            color: #f8fafc;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            gap: 2rem;
+            height: 100vh;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .pane {
+            flex: 1;
+            background: #1e293b;
+            border-radius: 12px;
+            border: 1px solid #334155;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .pane.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .header {
+            background: #0f172a;
+            padding: 1rem;
+            font-weight: 600;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .dots {
+            display: flex;
+            gap: 6px;
+            margin-right: 1rem;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .dot.red { background: #ef4444; }
+        .dot.yellow { background: #eab308; }
+        .dot.green { background: #22c55e; }
+
+        .terminal-content {
+            padding: 1.5rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #cbd5e1;
+            overflow-y: auto;
+        }
+
+        .prompt { color: #22c55e; }
+        .command { color: #f8fafc; }
+        .success { color: #10b981; font-weight: bold; }
+        .dim { color: #64748b; }
+        .highlight { color: #a855f7; }
+
+        .typing::after {
+            content: '█';
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        .markdown-preview {
+            padding: 2rem;
+            overflow-y: auto;
+        }
+        
+        .markdown-preview h1 { color: #38bdf8; margin-top: 0; }
+        .markdown-preview h2 { color: #f8fafc; border-bottom: 1px solid #334155; padding-bottom: 0.5rem; }
+        .badge { 
+            background: #1e40af; 
+            padding: 4px 8px; 
+            border-radius: 6px; 
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+
+        .diff {
+            background: #0f172a;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+        }
+        .diff-add { color: #22c55e; }
+        .diff-sub { color: #ef4444; }
+
+    </style>
+</head>
+<body>
+
+    <div class="pane visible" id="terminal">
+        <div class="header">
+            <div class="dots">
+                <div class="dot red"></div>
+                <div class="dot yellow"></div>
+                <div class="dot green"></div>
+            </div>
+            Terminal ~ /Vibe_sync
+        </div>
+        <div class="terminal-content" id="output">
+            <span class="prompt">aravi@workspace:~/Vibe_sync$</span> <span id="cmd" class="command typing"></span>
+        </div>
+    </div>
+
+    <div class="pane" id="editor">
+        <div class="header">
+            <div class="dots">
+                <div class="dot red"></div>
+                <div class="dot yellow"></div>
+                <div class="dot green"></div>
+            </div>
+            📄 VIBE_CONTEXT.md (Auto-Updated)
+        </div>
+        <div class="markdown-preview" id="md-content" style="opacity: 0; transition: opacity 1s">
+            <h1>🧠 VIBE-SYNC PROJECT CONTEXT</h1>
+            <div class="badge">Last Synced: Just now</div>
+
+            <h2>🏗 Architecture & Stack</h2>
+            <p>Python CLI using Typer. Context reads use Model Context Protocol (FastMCP). Cloud distribution supports Google Cloud Storage (GCS) and Google Cloud Run. Uses Gemini 2.0 Flash for automated project context diff summarizations.</p>
+
+            <h2>🚦 Current Progress</h2>
+            <ul>
+                <li><strong>Completed Features:</strong> Added GCS Storage upload/download logic, Dockerized MCP server for Cloud Run, finished hackathon PITCH.md.</li>
+                <li><strong>Work in Progress:</strong> Testing automated Git-hook AI summarization pipeline.</li>
+            </ul>
+
+            <h2>🐛 Known Issues / Technical Debt</h2>
+            <p>None right now, terminal checks are passing.</p>
+
+            <h2>➡️ The Next Move</h2>
+            <p>Verify deployment to Cloud Run and finalize the hackathon submission video demonstration.</p>
+        </div>
+    </div>
+
+    <script>
+        const cmdText = 'python main.py commit -m "added google cloud sync and deployment logic"';
+        const typeSpeed = 50;
+        let i = 0;
+
+        const cmdEl = document.getElementById('cmd');
+        const outputEl = document.getElementById('output');
+        const editorPane = document.getElementById('editor');
+        const mdContent = document.getElementById('md-content');
+
+        function appendLine(html, delay) {
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    const div = document.createElement('div');
+                    div.innerHTML = html;
+                    outputEl.insertBefore(div, cmdEl.parentNode);
+                    resolve();
+                }, delay);
+            });
+        }
+
+        async function runDemo() {
+            // Wait 1s before typing
+            await new Promise(r => setTimeout(r, 1000));
+
+            // Type command
+            for(let char of cmdText) {
+                cmdEl.textContent += char;
+                await new Promise(r => setTimeout(r, typeSpeed));
+            }
+
+            cmdEl.classList.remove('typing');
+            
+            await appendLine('<br><span class="highlight">⠋</span> Gathering Git history...', 500);
+            await appendLine('<span class="dim">Found 4 files changed, 25 insertions(+)</span>', 800);
+            await appendLine('<span class="highlight">⠧</span> Requesting context update from Gemini AI...', 1000);
+            
+            // Wait to simulate API delay
+            await new Promise(r => setTimeout(r, 2000));
+
+            await appendLine('<span class="success">✅ Updated VIBE_CONTEXT.md successfully.</span>', 500);
+            await appendLine('<span class="dim">Context generation complete in 2.3s</span><br>', 500);
+            
+            // Show new prompt line
+            await appendLine('<span class="prompt">aravi@workspace:~/Vibe_sync$</span> <span class="typing"></span>', 500);
+
+            // Reveal Editor
+            await new Promise(r => setTimeout(r, 1000));
+            editorPane.classList.add('visible');
+            
+            // Fade in markdown content
+            await new Promise(r => setTimeout(r, 800));
+            mdContent.style.opacity = '1';
+        }
+
+        runDemo();
+    </script>
+</body>
+</html>

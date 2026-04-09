@@ -1,0 +1,11 @@
+typer
+rich
+google-generativeai
+GitPython
+python-dotenv
+pydantic
+fastmcp
+google-cloud-storage
+uvicorn
+tiktoken
+groq

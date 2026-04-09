@@ -1,0 +1,15 @@
+# ----- Secrets & Environment -----
+.env
+
+# ----- Python bytecode -----
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ----- Vibe-Sync metadata (internal) -----
+.vibe/
+
+# ----- Keep VIBE_CONTEXT.md ignored -----
+# (Do NOT commit VIBE_CONTEXT.md — it may contain sensitive data)
+VIBE_CONTEXT.md
+vibe_bundle.md
